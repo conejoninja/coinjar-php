@@ -96,19 +96,22 @@ class CoinJar {
     order[order_items_attributes[n][quantity]]	Decimal	Mandatory
     order[order_items_attributes[n][amount]]	Decimal	Mandatory	Amount in order currency*/
     public function createOrder($items, $currency, $merchant_invoice, $merchant_reference, $notify_url, $return_url, $cancel_url) {
-        return $this->_doCheckoutRequest(
-            'orders',
-            array(
-                'order[currency]' => $currency,
-                'order[merchant_invoice]' => $merchant_invoice,
-                'order[merchant_reference]' => $merchant_reference,
-                'order[notify_url]' => $notify_url,
-                'order[return_url]' => $return_url,
-                'order[cancel_url]' => $cancel_url,
-                'order[order_items_attributes[]]' => $items
-            ),
-            'post'
+        $params = array(
+            'order[currency]' => $currency,
+            'order[merchant_invoice]' => $merchant_invoice,
+            'order[merchant_reference]' => $merchant_reference,
+            'order[notify_url]' => $notify_url,
+            'order[return_url]' => $return_url,
+            'order[cancel_url]' => $cancel_url
         );
+        $k = 0;
+        foreach($items as $item) {
+            $params['order[order_items_attributes['.$k.'][name]]'] = $item['name'];
+            $params['order[order_items_attributes['.$k.'][quantity]]'] = $item['quantity'];
+            $params['order[order_items_attributes['.$k.'][amount]]'] = $item['amount'];
+            $k++;
+        }
+        return $this->_doCheckoutRequest('orders', $params, 'post');
     }
 
     private function _doApiRequest($action, $params = null, $method = "get") {
@@ -151,6 +154,7 @@ class CoinJar {
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 
         $response = curl_exec($curl);
+        curl_close($curl);
         return $response;
     }
 }
