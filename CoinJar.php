@@ -1,7 +1,7 @@
 <?php
 class CoinJar {
 
-    private $_apiEndpoint;
+    private $_apiEndpoint = 'https://api.coinjar.io/v1/';
     private $_checkoutEndpoint;
     private $_apiKey;
     private $_checkoutUser;
@@ -13,88 +13,214 @@ class CoinJar {
         } else {
             $this->_checkoutEndpoint = 'https://checkout.coinjar.io/api/v1/';
         }
-        $this->_apiEndpoint = 'https://api.coinjar.io/v1/';
         $this->_apiKey = $apikey;
         $this->_checkoutUser = $user;
         $this->_checkoutPassword = $password;
     }
 
-    // Retrieve account information GET
+    /**
+     * Retrieve account information
+     *
+     * @return mixed (json)
+     */
     public function accountInformation() {
         return $this->_doApiRequest('account');
     }
 
+    /**
+     * List bitcoin addresses
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mixed (json)
+     */
     public function listBitcoinAddresses($limit = 100, $offset = 0) {
         return $this->_doApiRequest('bitcoin_addresses', array('limit' => $limit, 'offset' => $offset));
     }
 
+    /**
+     * Retrieve bitcoin address
+     *
+     * @param $address
+     * @return mixed (json)
+     */
     public function bitcoinAddress($address) {
         return $this->_doApiRequest('bitcoin_addresses/'.$address);
     }
 
+    /**
+     * Generate bitcoin address given a label
+     *
+     * @param $label
+     * @return mixed (json)
+     */
     public function generateBitcoinAddress($label) {
         return $this->_doApiRequest('bitcoin_addresses', array('label' => $label), 'post');
     }
 
+    /**
+     * List contacts
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mixed (json)
+     */
     public function listContacts($limit = 100, $offset = 0) {
         return $this->_doApiRequest('contacts', array('limit' => $limit, 'offset' => $offset));
     }
 
+    /**
+     * Retrieve contact by the $uuid
+     *
+     * @param $uuid
+     * @return mixed (json)
+     */
     public function contact($uuid) {
         return $this->_doApiRequest('contacts/'.$uuid);
     }
 
-    //payee = email o BTC address
+
+    /**
+     * Create contact
+     *
+     * @param $payee is the email or the bitcoin address
+     * @param $name
+     * @return mixed (json)
+     */
     public function createContact($payee, $name) {
         return $this->_doApiRequest('contacts', array('contact[payee]' => $payee, 'contact[name]' => $name), 'post');
     }
 
+    /**
+     * Delete contact
+     *
+     * @param $uuid
+     * @return mixed (json)
+     */
     public function deleteContact($uuid) {
         return $this->_doApiRequest('contacts/'.$uuid, null, 'delete');
     }
 
+    /**
+     * List all payments
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mixed (json)
+     */
     public function listPayments($limit = 100, $offset = 0) {
         return $this->_doApiRequest('payments', array('limit' => $limit, 'offset' => $offset));
     }
 
+    /**
+     * Retrieve a payment by the $uuid
+     *
+     * @param $uuid
+     * @return mixed (json)
+     */
     public function payment($uuid) {
         return $this->_doApiRequest('payments/'.$uuid);
     }
 
-    //payee = email o BTC address
+    /**
+     * Create a new payment
+     *
+     * @param $payee is the email or the bitcoin address
+     * @param $amount minimum is 0.00005430BTC
+     * @param $reference
+     * @return mixed (json)
+     */
     public function createPayment($payee, $amount, $reference) {
         return $this->_doApiRequest('payments', array('payment[payee]' => $payee, 'payment[amount' => $amount, 'payment[reference]' => $reference), 'post');
     }
 
+    /**
+     * Check if the payment is confirmed or not
+     *
+     * @param $uuid
+     * @return mixed (json)
+     */
     public function confirmPayment($uuid) {
         return $this->_doApiRequest('payments/'.$uuid.'/confirm', null, 'post');
     }
 
+    /**
+     * List all transactions
+     *
+     * @param int $limit
+     * @param int $offset
+     * @return mixed (json)
+     */
     public function listTransactions($limit = 100, $offset = 0) {
         return $this->_doApiRequest('transactions', array('limit' => $limit, 'offset' => $offset));
     }
 
+    /**
+     * Retrieve transaction information
+     *
+     * @param $uuid
+     * @return mixed (json)
+     */
     public function transaction($uuid) {
         return $this->_doApiRequest('transactions/'.$uuid);
     }
 
-    // $currency could be : BTC, USD, AUD, NZD, CAD, EUR, GBP, SGD, HKD, CHF, JPY
+    /**
+     * Retrieve the rate of conversion between currencies
+     * @param $currency could be : BTC, USD, AUD, NZD, CAD, EUR, GBP, SGD, HKD, CHF, JPY
+     * @return mixed (json)
+     */
     public function fairRate($currency) {
         return $this->_doApiRequest('fair_rate/'.strtoupper($currency));
     }
 
-    // limit / offset is not on the documentation, CHECK IT!
+    /**
+     * List orders
+     *
+     * @param int $limit is not on the documentation
+     * @param int $offset is not on the documentation
+     * @return mixed (json)
+     */
     public function listOrders($limit = 100, $offset = 0) {
         return $this->_doCheckoutRequest('orders', array('limit' => $limit, 'offset' => $offset));
     }
 
+    /**
+     * Retrieve order information
+     *
+     * @param $uuid
+     * @return mixed (json)
+     */
     public function order($uuid) {
         return $this->_doCheckoutRequest('orders/'.$uuid);
     }
 
-    /*order[order_items_attributes[n][name]]	String	Mandatory
-    order[order_items_attributes[n][quantity]]	Decimal	Mandatory
-    order[order_items_attributes[n][amount]]	Decimal	Mandatory	Amount in order currency*/
+    /**
+     * Retrieve the url of payment of an order given the $uuid
+     *
+     * @param $uuid
+     * @return string
+     */
+    public function orderPage($uuid) {
+        return 'https://checkout.coinjar.io/orders/'.$uuid;
+    }
+
+    /**
+     * Create a new order
+     * $items is an array of the form:
+     * $items[k]['name'] = 'name';
+     * $items[k]['quantity'] = 'quantity';
+     * $items[k]['amount'] = 'amount'; // in order currency
+     *
+     * @param $items
+     * @param $currency 3-character ISO code (BTC for bitcoin)
+     * @param $merchant_invoice
+     * @param $merchant_reference
+     * @param $notify_url IPN callback URL
+     * @param $return_url After payment is received, the URL to direct the user to
+     * @param $cancel_url If payment is cancelled, the URL to direct the user to
+     * @return mixed (json)
+     */
     public function createOrder($items, $currency, $merchant_invoice, $merchant_reference, $notify_url, $return_url, $cancel_url) {
         $params = array(
             'order[currency]' => $currency,
@@ -114,14 +240,40 @@ class CoinJar {
         return $this->_doCheckoutRequest('orders', $params, 'post');
     }
 
+    /**
+     * Request for regular API methods
+     *
+     * @param $action
+     * @param null $params
+     * @param string $method
+     * @return mixed (json)
+     */
     private function _doApiRequest($action, $params = null, $method = "get") {
         return $this->_doRequest($this->_apiEndpoint, $action, $this->_apiKey, $params, $method);
     }
 
+    /**
+     * Request for Checkout API methods
+     *
+     * @param $action
+     * @param null $params
+     * @param string $method
+     * @return mixed (json)
+     */
     private function _doCheckoutRequest($action, $params = null, $method = "get") {
         return $this->_doRequest($this->_checkoutEndpoint, $action, $this->_checkoutUser.":".$this->_checkoutPassword, $params, $method);
     }
 
+    /**
+     * Generic request
+     *
+     * @param $endpoint
+     * @param $action
+     * @param $user API key or Checkout's user & password in format [user]:[password]
+     * @param null $params
+     * @param string $method
+     * @return mixed (json)
+     */
     private function _doRequest($endpoint, $action, $user, $params = null, $method = "get") {
         $request = '';
         if($params!=null && is_array($params)) {
