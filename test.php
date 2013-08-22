@@ -12,4 +12,5 @@ $items[0]['amount'] = 2;
 $order = $coinjar->createOrder($items, 'USD', 'invoice#1', 'coinjar-php', 'notify-url', 'retrn-url', 'cancel-url');
 print_r($order);
 
+
 ?>

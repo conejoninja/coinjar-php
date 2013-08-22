@@ -6,14 +6,17 @@ class CoinJar {
     private $_apiKey;
     private $_checkoutUser;
     private $_checkoutPassword;
+    private $_orderURL;
 
     public function __construct($user = '', $password = '', $apikey = '', $sandbox = false) {
         if($sandbox) {
             $this->_apiEndpoint = 'https://secure.sandbox.coinjar.io/api/v1/';
             $this->_checkoutEndpoint = 'https://checkout.sandbox.coinjar.io/api/v1/';
+            $this->_orderURL = 'https://checkout.sandbox.coinjar.io/orders/';
         } else {
             $this->_apiEndpoint = 'https://api.coinjar.io/v1/';
             $this->_checkoutEndpoint = 'https://checkout.coinjar.io/api/v1/';
+            $this->_orderURL = 'https://checkout.coinjar.io/orders/';
         }
         $this->_apiKey = $apikey;
         $this->_checkoutUser = $user;
@@ -204,7 +207,7 @@ class CoinJar {
      * @return string
      */
     public function orderPage($uuid) {
-        return 'https://checkout.coinjar.io/orders/'.$uuid;
+        return $this->_orderURL.$uuid;
     }
 
     /**
