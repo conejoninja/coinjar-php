@@ -224,6 +224,8 @@ class CoinJar {
      * @return mixed (json)
      */
     public function createOrder($items, $currency, $merchant_invoice, $merchant_reference, $notify_url, $return_url, $cancel_url) {
+        $currency = strtoupper($currency);
+        if(!in_array($currency, array('BTC', 'USD', 'AUD', 'NZD', 'CAD', 'EUR', 'GBP', 'SGD', 'HKD', 'CHF', 'JPY'))) { return false; }
         $params = array(
             'order[currency]' => $currency,
             'order[merchant_invoice]' => $merchant_invoice,
@@ -306,6 +308,7 @@ class CoinJar {
         curl_setopt($curl, CURLOPT_HEADER, false);
         curl_setopt($curl, CURLOPT_TIMEOUT, 30);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        //curl_setopt($curl, CURLOPT_VERBOSE, true);
 
         $response = curl_exec($curl);
         curl_close($curl);
