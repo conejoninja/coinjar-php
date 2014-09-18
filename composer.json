@@ -1,0 +1,25 @@
+{
+    "name": "conejoninja/coinjar-php",
+    "description": "Library in PHP to work with Coinjar ( http://coinjar.io/ ) payment system",
+    "version": "0.1.0",
+    "type": "library",
+    "keywords": [
+        "bitcoin",
+        "billing"
+    ],
+    "homepage": "https://github.com/conejoninja/coinjar-php",
+    "licence": "MIT",
+    "authors": [{
+        "name": "Daniel Esteban",
+        "email": "conejo@conejo.me",
+        "homepage": "http://www.theninjabunny.com/",
+        "role": "Developer"
+    }],
+    "support": {
+        "email": "conejo@conejo.me",
+        "issues": "https://github.com/conejoninja/coinjar-php/issues"
+    },
+    "autoload": {
+        "files": ["CoinJar.php"]
+    }
+}
