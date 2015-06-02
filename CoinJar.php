@@ -10,13 +10,13 @@ class CoinJar {
 
     public function __construct($user = '', $secret = '', $apikey = '', $sandbox = false) {
         if($sandbox) {
-            $this->_apiEndpoint = 'https://secure.sandbox.coinjar.io/api/v1/';
-            $this->_checkoutEndpoint = 'https://checkout.sandbox.coinjar.io/api/v1/';
-            $this->_orderURL = 'https://checkout.sandbox.coinjar.io/orders/';
+            $this->_apiEndpoint = 'https://secure.sandbox.coinjar.com/api/v1/';
+            $this->_checkoutEndpoint = 'https://checkout.sandbox.coinjar.com/api/v1/';
+            $this->_orderURL = 'https://checkout.sandbox.coinjar.com/orders/';
         } else {
-            $this->_apiEndpoint = 'https://api.coinjar.io/v1/';
-            $this->_checkoutEndpoint = 'https://checkout.coinjar.io/api/v1/';
-            $this->_orderURL = 'https://checkout.coinjar.io/orders/';
+            $this->_apiEndpoint = 'https://api.coinjar.com/v1/';
+            $this->_checkoutEndpoint = 'https://checkout.coinjar.com/api/v1/';
+            $this->_orderURL = 'https://checkout.coinjar.com/orders/';
         }
         $this->_apiKey = $apikey;
         $this->_checkoutUser = $user;
